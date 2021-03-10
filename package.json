@@ -6,7 +6,7 @@
   "scripts": {
     "rollup": "rollup -c",
     "rollup-watch": "rollup -c -w",
-    "browser-sync": "browser-sync start --proxy 'localhost:3001' --files index.html ./public/styles.css ./public/dist/bundle.js",
+    "browser-sync": "browser-sync start --proxy 'localhost:3000' --files index.html ./public/styles.css ./public/dist/bundle.js",
     "nodemon": "nodemon ./src/app.js",
     "dev": "concurrently npm:nodemon npm:browser-sync npm:rollup-watch",
     "start": "node ./src/app.js",

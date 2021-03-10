@@ -9,12 +9,13 @@ const {
 } = process.env;
 
 let client;
+let asyncGet;
+let asyncSet;
 if (redisUrl) {
   client = redis.createClient({ url: redisUrl });
+  asyncGet = util.promisify(client.get).bind(client);
+  asyncSet = util.promisify(client.set).bind(client);
 }
-
-const asyncGet = util.promisify(client.get).bind(client);
-const asyncSet = util.promisify(client.set).bind(client);
 
 /**
  * Returns cached data or null if not cached.

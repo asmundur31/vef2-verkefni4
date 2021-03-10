@@ -9,7 +9,7 @@ import { router as proxyRouter } from './proxy.js';
 dotenv.config();
 
 const {
-  PORT: port = 3001, // Mun verða proxyað af browser-sync í development
+  PORT: port = 3000, // Mun verða proxyað af browser-sync í development
 } = process.env;
 
 const app = express();
