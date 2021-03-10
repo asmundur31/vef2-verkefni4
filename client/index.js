@@ -1,32 +1,27 @@
 import { fetchEarthquakes } from './lib/earthquakes';
 import { el, element, formatDate } from './lib/utils';
-import { init, createPopup } from './lib/map';
+import { init, createPopup, clearMarkers } from './lib/map';
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // TODO
-  // Bæta við virkni til að sækja úr lista
-  // Nota proxy
-  // Hreinsa header og upplýsingar þegar ný gögn eru sótt
-  // Sterkur leikur að refactora úr virkni fyrir event handler í sér fall
-
-  const earthquakes = await fetchEarthquakes();
-
-  // Fjarlægjum loading skilaboð eftir að við höfum sótt gögn
-  const loading = document.querySelector('.loading');
-  const parent = loading.parentNode;
-  parent.removeChild(loading);
-
+/**
+ * Fall sem birtir alla jarðskjálfta
+ * @param {json} earthquakes json sem inniheldur alla jarðskjálfta sem á að birta
+ */
+function showEarthquakes(earthquakes, titleE, elapsed, cached) {
+  const ul = document.querySelector('.earthquakes');
   if (!earthquakes) {
-    parent.appendChild(
+    ul.parentNode.appendChild(
       el('p', 'Villa við að sækja gögn'),
     );
   }
-
-  const ul = document.querySelector('.earthquakes');
-  const map = document.querySelector('.map');
-
-  init(map);
-
+  const header = document.querySelector('.chosen_earthquakes');
+  header.innerHTML = titleE;
+  const cache = document.querySelector('.cache');
+  if (cached) {
+    cache.innerHTML = `Gögn eru í cache. Fyrirspurn tók ${elapsed} sek.`;
+  } else {
+    cache.innerHTML = `Gögn eru ekki í cache. Fyrirspurn tók ${elapsed} sek.`;
+  }
+  // Birtum síðan alla jarðskjálftana
   earthquakes.forEach((quake) => {
     const {
       title, mag, time, url,
@@ -63,4 +58,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     ul.appendChild(li);
   });
+}
+
+/**
+ * Fall sem hreinsar burt alla jarðskjálfta sem eru núverandi á síðunni
+ */
+function clearEarthquakes() {
+  const ul = document.querySelector('.earthquakes');
+  const cache = document.querySelector('.cache');
+  const header = document.querySelector('.chosen_earthquakes');
+  ul.innerHTML = '';
+  cache.innerHTML = '';
+  header.innerHTML = '';
+  clearMarkers();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('a');
+  links.forEach((link) => {
+    link.addEventListener('click', async (e) => {
+      e.preventDefault();
+      // Byrjum á að hreinsa jarðskjálfta ef eitthverjir eru
+      clearEarthquakes();
+
+      const urlParams = new URLSearchParams(e.target.getAttribute('href').slice(2));
+      const type = urlParams.get('type');
+      const period = urlParams.get('period');
+
+      // Birtum loading gaurinn
+      const loading = document.querySelector('.loading');
+      loading.classList.toggle('hidden');
+      // Sækjum svo gögnin
+      const earthquakes = await fetchEarthquakes(type, period);
+
+      // Fjarlægjum loading gaurinn
+      loading.classList.toggle('hidden');
+      // Birtum jarðskjálftana
+      showEarthquakes(
+        earthquakes.data.features,
+        earthquakes.data.metadata.title,
+        earthquakes.info.elapsed,
+        earthquakes.info.cached,
+      );
+    });
+  });
+  const map = document.querySelector('.map');
+  init(map);
 });

@@ -13,12 +13,14 @@ const {
 } = process.env;
 
 const app = express();
-const path = dirname(fileURLToPath(import.meta.url));
 
+const path = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(join(path, '../public')));
 
-// TODO setja upp proxy þjónustu
-// TODO birta index.html skjal
+app.use('/proxy', proxyRouter);
+app.use('/', (req, res) => {
+  res.sendFile(join(path, '../index.html'));
+});
 
 /**
  * Middleware sem sér um 404 villur.
@@ -29,8 +31,7 @@ app.use(express.static(join(path, '../public')));
  */
 // eslint-disable-next-line no-unused-vars
 function notFoundHandler(req, res, next) {
-  const title = 'Síða fannst ekki';
-  res.status(404).render('error', { title });
+  res.status(404).send('Villa 404 - síða fannst ekki');
 }
 
 /**
@@ -44,8 +45,7 @@ function notFoundHandler(req, res, next) {
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
   console.error(err);
-  const title = 'Villa kom upp';
-  res.status(500).render('error', { title });
+  res.status(500).send('Villa 500');
 }
 
 app.use(notFoundHandler);

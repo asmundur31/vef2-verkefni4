@@ -1,7 +1,12 @@
+const PROXY_SERVER_URL = 'http://localhost:3000/proxy';
+
 export async function fetchEarthquakes(type, period) {
   // TODO sækja gögn frá proxy þjónustu
+  const URL = `${PROXY_SERVER_URL}?type=${type}&period=${period}`;
+  let result;
+
   try {
-    result = await fetch(?);
+    result = await fetch(URL);
   } catch (e) {
     console.error('Villa við að sækja', e);
     return null;
