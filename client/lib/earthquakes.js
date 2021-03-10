@@ -1,4 +1,11 @@
-const PROXY_SERVER_URL = 'http://localhost:3000/proxy';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const {
+  PORT: port = 3000, // Mun verða proxyað af browser-sync í development
+} = process.env;
+
+const PROXY_SERVER_URL = `http://localhost:${port}/proxy`;
 
 export async function fetchEarthquakes(type, period) {
   // TODO sækja gögn frá proxy þjónustu
