@@ -1,4 +1,5 @@
-const PROXY_SERVER_URL = `http://localhost:3000/proxy`;
+const currentURL = window.location.href;
+const PROXY_SERVER_URL = `${currentURL}proxy`;
 
 export async function fetchEarthquakes(type, period) {
   // TODO sækja gögn frá proxy þjónustu
